@@ -81,16 +81,21 @@ class AdjacencyGraph:
             return max_path, max_length
 
         visited = {}
-        longest_paths = []
+        paths = []
         for node in self.edges.keys():
             if self.in_degree.get(node, 0) == 0:
                 stack = set()
                 path, length = dfs(node, [node], 0, visited, stack)
-                longest_paths.append((path, length))
+                paths.append((path, length))
 
-        longest_paths.sort(key=lambda x: x[1], reverse=True)
-        if len(longest_paths) > 0:
-            return longest_paths[0]
+        paths.sort(key=lambda x: x[1], reverse=True)
+        if len(paths) > 0:
+            longest_path_length = paths[0][1]
+            longest_paths = []
+            for path, length in paths:
+                if length == longest_path_length:
+                    longest_paths.append((path, length))
+            return longest_paths
         return []
 
 
@@ -159,8 +164,15 @@ def build_adjacency_graph(trie, fragments, overlap_limit):
 
 
 if __name__ == '__main__':
-    FRAGMENTS = ['AACACCA', 'TCACCAG', 'ACACCAT', 'CACCATG', 'ACCATGA']
-    OVERLAP_LIMIT = 4
-    trie = build_trie(FRAGMENTS)
-    adjacency_graph = build_adjacency_graph(trie, FRAGMENTS, OVERLAP_LIMIT)
+    #fragments = ['AACACCA', 'TCACCAG', 'ACACCAT', 'CACCATG', 'ACCATGA', 'CACCAGT', 'ACCAGTG', 'CCAGTGA']
+    #consensus = 4
+    consensus = int(input("Enter the consensus number: "))
+    num_fragments = int(input("Enter the number of fragments: "))
+    fragments = []
+    for i in range(0, num_fragments):
+        fragment = input()
+        fragments.append(fragment)
+
+    trie = build_trie(fragments)
+    adjacency_graph = build_adjacency_graph(trie, fragments, consensus)
     print(adjacency_graph.get_longest_path())
